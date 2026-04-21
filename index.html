@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Islam Elshakhs · Data Analyst Portfolio</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', 'DM Sans', system-ui, -apple-system, sans-serif;
+      background: #F0F4F8;
+      color: #1A2535;
+      line-height: 1.5;
+    }
+
+    /* navbar */
+    .navbar {
+      background: #1F3864;
+      color: white;
+      padding: 1rem 2rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .logo {
+      font-weight: 700;
+      font-size: 1.4rem;
+      letter-spacing: -0.5px;
+    }
+    .logo span {
+      color: #C9A84C;
+    }
+    .nav-links a {
+      color: white;
+      text-decoration: none;
+      margin-left: 1.8rem;
+      font-size: 0.9rem;
+      transition: opacity 0.2s;
+    }
+    .nav-links a:hover {
+      opacity: 0.7;
+    }
+
+    /* container */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 2rem 3rem;
+    }
+
+    /* intro section */
+    .intro {
+      background: white;
+      border-radius: 20px;
+      padding: 2rem;
+      margin-bottom: 2.5rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      border: 1px solid #D9E3EE;
+    }
+    .intro h1 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+      color: #1F3864;
+    }
+    .intro .tagline {
+      font-size: 1.1rem;
+      color: #1F6B75;
+      margin-bottom: 1rem;
+      border-left: 4px solid #C9A84C;
+      padding-left: 1rem;
+    }
+    .pipeline {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin: 1.5rem 0 0;
+      justify-content: space-between;
+    }
+    .pipeline-step {
+      flex: 1;
+      background: #F7FAFC;
+      border-radius: 12px;
+      padding: 0.8rem;
+      text-align: center;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #1F3864;
+    }
+    .pipeline-step strong {
+      display: block;
+      font-size: 1rem;
+      margin-bottom: 0.2rem;
+    }
+
+    /* case study cards */
+    .case-study {
+      background: white;
+      border-radius: 20px;
+      padding: 1.8rem 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      border: 1px solid #D9E3EE;
+      transition: box-shadow 0.2s;
+    }
+    .case-study:hover {
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+    .case-title {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #1F3864;
+      margin-bottom: 0.25rem;
+    }
+    .badge-container {
+      margin: 0.5rem 0 1rem;
+    }
+    .badge {
+      display: inline-block;
+      background: #EAF3F5;
+      color: #1F6B75;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.2rem 0.7rem;
+      border-radius: 20px;
+      margin-right: 0.5rem;
+      margin-bottom: 0.3rem;
+    }
+    h3 {
+      font-size: 1.2rem;
+      margin: 1.2rem 0 0.5rem;
+      color: #1F3864;
+    }
+    h4 {
+      font-size: 1rem;
+      margin: 0.8rem 0 0.3rem;
+      color: #1F6B75;
+    }
+    .outcome {
+      background: #F0F9F0;
+      border-left: 4px solid #27AE60;
+      padding: 0.8rem 1.2rem;
+      margin: 1rem 0;
+      border-radius: 12px;
+    }
+    .code-block {
+      background: #1E2A3A;
+      color: #E2E8F0;
+      padding: 1rem;
+      border-radius: 12px;
+      overflow-x: auto;
+      font-family: 'Courier New', monospace;
+      font-size: 0.85rem;
+      margin: 0.8rem 0;
+    }
+    details {
+      margin: 0.8rem 0;
+      cursor: pointer;
+    }
+    summary {
+      font-weight: 600;
+      color: #1F6B75;
+      margin-bottom: 0.5rem;
+    }
+    iframe {
+      width: 100%;
+      height: 550px;
+      border: 1px solid #D9E3EE;
+      border-radius: 16px;
+      margin: 1rem 0;
+    }
+    .download-link {
+      display: inline-block;
+      background: #1F3864;
+      color: white;
+      padding: 0.4rem 1rem;
+      border-radius: 30px;
+      text-decoration: none;
+      font-size: 0.8rem;
+      margin-top: 0.5rem;
+      margin-right: 0.8rem;
+    }
+    .download-link:hover {
+      background: #2A4A7A;
+    }
+    hr {
+      margin: 1.5rem 0;
+      border: none;
+      height: 1px;
+      background: #D9E3EE;
+    }
+    footer {
+      text-align: center;
+      font-size: 0.8rem;
+      color: #5A6B7E;
+      margin-top: 2rem;
+      border-top: 1px solid #D9E3EE;
+      padding-top: 1.5rem;
+    }
+    @media (max-width: 700px) {
+      .navbar { flex-direction: column; gap: 0.5rem; text-align: center; }
+      .nav-links a { margin: 0 0.8rem; }
+      .pipeline { flex-direction: column; }
+      .container { padding: 1rem; }
+      .case-study { padding: 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="navbar">
+  <div class="logo">Islam <span>Elshakhs</span> · Data Analyst</div>
+  <div class="nav-links">
+    <a href="#projects">Projects</a>
+    <a href="#cv">CV</a>
+    <a href="#contact">Contact</a>
+  </div>
+</div>
+
+<div class="container" id="projects">
+
+  <div class="intro">
+    <h1>From raw data to decision‑ready insights</h1>
+    <div class="tagline">SQL → Python → Excel → Tableau — full pipeline case studies</div>
+    <p>I design data workflows that solve real business problems. Below you’ll find four projects that follow a complete analytics cycle: extracting data with SQL, cleaning and modelling with Python, forecasting with Excel, and presenting interactive dashboards. Each case includes the <strong>business problem, technical approach, live artifacts, and measurable outcomes</strong>.</p>
+    <div class="pipeline">
+      <div class="pipeline-step"><strong>1. Extract & model</strong> SQL · schema design</div>
+      <div class="pipeline-step"><strong>2. Transform & analyse</strong> Python · pandas</div>
+      <div class="pipeline-step"><strong>3. Model & forecast</strong> Excel · Python scripting</div>
+      <div class="pipeline-step"><strong>4. Visualise & present</strong> Tableau · HTML/Chart.js</div>
+    </div>
+  </div>
+
+  <!-- ========== PROJECT 1: SQL E‑COMMERCE ========== -->
+  <div class="case-study">
+    <div class="case-title">E‑Commerce Sales & Inventory Reporting</div>
+    <div class="badge-container">
+      <span class="badge">SQL</span>
+      <span class="badge">MySQL Workbench</span>
+      <span class="badge">Data Modelling</span>
+    </div>
+
+    <h3>📌 Business Problem</h3>
+    <p>An e‑commerce retailer had no structured visibility into sales by category, region, or month. Inventory stockouts caused missed revenue but were not tracked systematically. Reports relied on manual spreadsheet exports.</p>
+
+    <h3>⚙️ Technical Approach</h3>
+    <ul>
+      <li>Designed a normalised relational schema: <code>customers</code>, <code>products</code>, <code>orders</code>, <code>order_items</code>, <code>inventory</code>.</li>
+      <li>Wrote analytical SQL queries for revenue segmentation, cohort retention, top SKUs, and inventory depletion.</li>
+      <li>Created a reorder alert system using 90‑day moving average daily sales.</li>
+    </ul>
+
+    <h3>📄 Key SQL Snippet – Monthly Revenue & AOV</h3>
+    <details>
+      <summary>🔍 View query</summary>
+      <div class="code-block">
+        SELECT
+          DATE_FORMAT(o.order_date, '%Y-%m') AS month,
+          COUNT(DISTINCT o.order_id) AS total_orders,
+          SUM(oi.quantity * oi.unit_price) AS gross_revenue,
+          ROUND(SUM(oi.quantity * oi.unit_price) / COUNT(DISTINCT o.order_id), 2) AS avg_order_value
+        FROM orders o
+        JOIN order_items oi ON oi.order_id = o.order_id
+        WHERE o.status = 'completed'
+        GROUP BY month
+        ORDER BY month;
+      </div>
+    </details>
+
+    <h3>📊 Outcomes & Insights</h3>
+    <div class="outcome">
+      ✅ Identified top 3 categories driving 58% of revenue.<br>
+      ✅ Flagged 8 SKUs with stock below 14 days of demand → enabled proactive reordering.<br>
+      ✅ Provided foundation for the Tableau dashboard below.
+    </div>
+
+    <a href="ecommerce_sales_reporting.sql" class="download-link" download>⬇ Download full SQL script</a>
+    <p style="margin-top: 0.5rem; font-size:0.8rem;">📁 <em>Note: upload the original .sql file to your repo.</em></p>
+  </div>
+
+  <!-- ========== PROJECT 2: PYTHON CUSTOMER SUPPORT KPI ========== -->
+  <div class="case-study">
+    <div class="case-title">Customer Support KPI Analysis</div>
+    <div class="badge-container">
+      <span class="badge">Python</span>
+      <span class="badge">pandas</span>
+      <span class="badge">matplotlib</span>
+    </div>
+
+    <h3>📌 Business Problem</h3>
+    <p>The support team had no visibility into resolution times or CSAT by issue type. Monthly manual reporting from CSV exports took ~4 hours and lacked standard metrics like First‑Contact Resolution (FCR).</p>
+
+    <h3>⚙️ Technical Approach</h3>
+    <ul>
+      <li>Ingested 1,200 tickets, cleaned data, engineered features: <code>fcr_flag</code>, <code>sla_breach</code>, <code>handle_band</code>.</li>
+      <li>Built a 4‑panel matplotlib dashboard showing monthly FCR/CSAT, CSAT by issue type, handle‑time distribution, and SLA breach by agent.</li>
+      <li>Automated the entire reporting pipeline – one script regenerates everything.</li>
+    </ul>
+
+    <h3>📄 Key Python Snippet – FCR & monthly aggregation</h3>
+    <details>
+      <summary>🔍 View code</summary>
+      <div class="code-block">
+        df['fcr_flag'] = (df['reopened'] == 0).astype(int)<br>
+        monthly = df.groupby('month').agg(<br>
+            fcr_rate=('fcr_flag', 'mean'),<br>
+            avg_csat=('csat_score', 'mean')<br>
+        ).reset_index()<br>
+        monthly['fcr_rate'] = monthly['fcr_rate'] * 100
+      </div>
+    </details>
+
+    <h3>📊 Dashboard Preview</h3>
+    <img src="images/support_dashboard.png" alt="Support KPI Dashboard" style="width:100%; border-radius:12px; border:1px solid #ddd; margin:0.5rem 0;">
+    <p><em>(Screenshot of the matplotlib output – upload your generated PNG to <code>images/</code>)</em></p>
+
+    <h3>🎯 Outcomes</h3>
+    <div class="outcome">
+      ⏱ Reporting time reduced from <strong>4 hours → 5 minutes</strong>.<br>
+      📉 Identified “Cancellation Request” CSAT < 3.0 → targeted coaching → <strong>+0.4 CSAT</strong>.<br>
+      🧑‍💻 Highlighted 2 agents with >35% SLA breach → process improvement initiated.
+    </div>
+
+    <a href="customer_support_kpi_analysis.py" class="download-link" download>⬇ Download Python script</a>
+  </div>
+
+  <!-- ========== PROJECT 3: EXCEL CO‑WORKING ========== -->
+  <div class="case-study">
+    <div class="case-title">Co‑Working Space Occupancy & Revenue Analysis</div>
+    <div class="badge-container">
+      <span class="badge">Excel</span>
+      <span class="badge">Python (openpyxl)</span>
+      <span class="badge">Business Modelling</span>
+    </div>
+
+    <h3>📌 Business Problem</h3>
+    <p>The co‑working space lacked a monthly view of occupancy, cancellation trends, and revenue by membership tier. Pricing decisions were made without evidence of seasonal demand.</p>
+
+    <h3>⚙️ Technical Approach</h3>
+    <ul>
+      <li>Consolidated 12 months of booking logs into a structured Excel workbook.</li>
+      <li>Built formula‑driven “Monthly Summary” using <code>COUNTIFS</code>/<code>SUMIFS</code> referencing raw data.</li>
+      <li>Automated chart refresh with a Python (openpyxl) script that generates pre‑formatted summary sheets.</li>
+    </ul>
+
+    <h3>📄 Example Excel Formula – Cancellation Rate</h3>
+    <details>
+      <summary>🔍 View formula</summary>
+      <div class="code-block">
+        =IF(B3=0,0,C3/B3)<br>
+        Where B3 = total bookings, C3 = cancelled bookings
+      </div>
+    </details>
+
+    <h3>📈 Outcomes</h3>
+    <div class="outcome">
+      📉 Identified Q1 and Q3 utilisation dips → launched <strong>15% off‑peak promo</strong>.<br>
+      🚫 Cancellation rate visibility → new 48‑hour notice policy reduced cancellations by ~18%.<br>
+      🤖 Python script cut manual reporting prep time from 2h → 10min.
+    </div>
+
+    <a href="coworking_occupancy_analysis.xlsx" class="download-link" download>⬇ Download Excel workbook</a>
+  </div>
+
+  <!-- ========== PROJECT 4: LIVE TABLEAU / HTML DASHBOARD ========== -->
+  <div class="case-study">
+    <div class="case-title">Sales Performance Dashboard (Interactive)</div>
+    <div class="badge-container">
+      <span class="badge">Tableau</span>
+      <span class="badge">Chart.js</span>
+      <span class="badge">HTML/CSS</span>
+    </div>
+
+    <h3>📌 Business Problem</h3>
+    <p>Management needed a live, filterable view of revenue, orders, product performance, and inventory status – but only had static monthly PDFs.</p>
+
+    <h3>⚙️ Technical Approach</h3>
+    <ul>
+      <li>Used the SQL e‑commerce dataset as source.</li>
+      <li>Built an interactive HTML/Chart.js dashboard with region filters, KPI cards, and dynamic charts.</li>
+      <li>Published a Tableau version for executive consumption (linked below).</li>
+    </ul>
+
+    <h3>🖥️ Live Dashboard (embedded)</h3>
+    <p><em>Your existing <code>sales_performance_dashboard.html</code> is embedded below. Use the region filter to explore.</em></p>
+    <iframe src="sales_performance_dashboard.html" title="Sales Dashboard"></iframe>
+
+    <h3>🎯 Insights from Dashboard</h3>
+    <div class="outcome">
+      📦 Top SKU “Wireless Earbuds Pro” contributed 12% of total revenue.<br>
+      📍 Sofia & Central region drives 35% of sales – opportunity for targeted marketing.<br>
+      ⚠️ Inventory alerts: USB‑C Hub and Cookware Set below reorder point.
+    </div>
+
+    <a href="sales_performance_dashboard.html" class="download-link" download>⬇ Download standalone HTML dashboard</a>
+    <a href="#" class="download-link" style="background:#C9A84C; color:#1F3864;">🔗 Tableau Public (add your link)</a>
+  </div>
+
+  <hr id="cv">
+  <div style="text-align: center;">
+    <h2 style="color:#1F3864;">📄 Full CV & Contact</h2>
+    <p>Download my CV or connect with me directly.</p>
+    <a href="Islam_Elshakhs_CV.docx" class="download-link" style="background:#1F6B75;" download>📥 Download CV (DOCX)</a>
+    <a href="mailto:islamelshakhs@gmail.com" class="download-link" style="background:#C9A84C; color:#1F3864;">✉️ islamelshakhs@gmail.com</a>
+    <a href="https://linkedin.com/in/islamelshakhs" class="download-link" style="background:#1F3864;">🔗 LinkedIn</a>
+  </div>
+
+  <footer>
+    © 2025 Islam Elshakhs — Data Analyst portfolio. Built with HTML/CSS, hosted on GitHub Pages.<br>
+    All case studies include real code, data models, and business outcomes.
+  </footer>
+</div>
+
+</body>
+</html>
