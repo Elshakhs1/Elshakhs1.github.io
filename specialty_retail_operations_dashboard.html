@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Specialty Retail Operations Dashboard — Islam Elshakhs</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --n:#1F3864;--t:#1F6B75;--g:#C9A84C;
+  --t2:#2E9FAE;--grn:#1A9B5E;--red:#C0392B;--amb:#D4830A;
+  --bg:#F2F5F9;--surf:#fff;--bdr:#DDE5EF;
+  --tx1:#18243A;--tx2:#526070;--tx3:#8EA0B0;
+  --sh:0 1px 8px rgba(31,56,100,.09);
+  --sh2:0 4px 20px rgba(31,56,100,.15);
+}
+
+body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--tx1);min-height:100vh}
+
+/* ── HEADER ── */
+.hdr{
+  background:linear-gradient(120deg,var(--n) 0%,#2A4E8C 100%);
+  padding:0 36px;display:flex;align-items:center;justify-content:space-between;
+  height:64px;box-shadow:0 2px 20px rgba(0,0,0,.28);position:sticky;top:0;z-index:200
+}
+.hdr-left{display:flex;align-items:center;gap:16px}
+.hdr-badge{
+  background:var(--g);color:var(--n);font-weight:700;font-size:13px;
+  padding:6px 12px;border-radius:8px;letter-spacing:.02em
+}
+.hdr-name{color:#fff;font-weight:600;font-size:15px}
+.hdr-sub{color:rgba(255,255,255,.5);font-size:11px;margin-top:1px}
+.hdr-right{display:flex;align-items:center;gap:20px}
+.hdr-tag{
+  background:rgba(201,168,76,.18);border:1px solid rgba(201,168,76,.4);
+  color:var(--g);padding:4px 14px;border-radius:20px;font-size:12px;font-weight:500
+}
+.pulse{width:8px;height:8px;border-radius:50%;background:#2ECC71;animation:p 2s infinite}
+@keyframes p{0%,100%{box-shadow:0 0 0 3px rgba(46,204,113,.2)}50%{box-shadow:0 0 0 7px rgba(46,204,113,.04)}}
+
+/* ── TAB BAR ── */
+.tabs{
+  background:var(--surf);border-bottom:1px solid var(--bdr);
+  display:flex;align-items:center;padding:0 36px;gap:0;overflow-x:auto
+}
+.tab{
+  padding:14px 20px;font-size:13px;font-weight:500;color:var(--tx2);
+  border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap;
+  transition:all .18s
+}
+.tab:hover{color:var(--n)}
+.tab.on{color:var(--n);border-bottom-color:var(--g);font-weight:600}
+
+/* ── MAIN ── */
+.main{padding:28px 36px;max-width:1440px;margin:0 auto}
+.view{display:none}.view.on{display:block}
+
+/* ── ALERT BANNER ── */
+.alert-banner{
+  background:linear-gradient(90deg,rgba(31,107,117,.12),rgba(31,107,117,.06));
+  border:1px solid rgba(31,107,117,.3);border-radius:12px;
+  padding:12px 20px;display:flex;align-items:center;gap:12px;
+  margin-bottom:24px;font-size:13px;color:var(--t)
+}
+.alert-icon{font-size:18px}
+
+/* ── KPI STRIP ── */
+.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:24px}
+.k{
+  background:var(--surf);border-radius:12px;border:1px solid var(--bdr);
+  padding:18px 20px;box-shadow:var(--sh);position:relative;overflow:hidden;
+  transition:transform .2s,box-shadow .2s;cursor:default
+}
+.k:hover{transform:translateY(-2px);box-shadow:var(--sh2)}
+.k-bar{position:absolute;top:0;left:0;right:0;height:3px;border-radius:12px 12px 0 0}
+.k-label{font-size:11px;font-weight:600;color:var(--tx2);text-transform:uppercase;
+  letter-spacing:.08em;margin-bottom:6px}
+.k-val{font-size:26px;font-weight:700;letter-spacing:-.5px;line-height:1}
+.k-sub{font-size:11px;color:var(--tx3);margin-top:6px}
+.k-delta{font-size:11px;font-weight:600;margin-top:5px;display:flex;align-items:center;gap:3px}
+.up{color:var(--grn)}.dn{color:var(--red)}.ne{color:var(--tx3)}
+
+/* ── GRID ── */
+.g2{display:grid;gap:20px;margin-bottom:20px}
+.g2.a{grid-template-columns:1.7fr 1fr}
+.g2.b{grid-template-columns:1fr 1fr}
+.g2.c{grid-template-columns:1fr 1fr 1fr}
+.card{background:var(--surf);border-radius:14px;border:1px solid var(--bdr);
+  box-shadow:var(--sh);overflow:hidden}
+.ch{padding:18px 22px 10px;display:flex;justify-content:space-between;align-items:flex-start}
+.ct{font-size:14px;font-weight:600;color:var(--tx1)}
+.cs{font-size:12px;color:var(--tx2);margin-top:2px}
+.ctag{padding:3px 10px;border-radius:12px;font-size:11px;font-weight:600;
+  background:rgba(31,107,117,.1);color:var(--t)}
+.ctag.g{background:rgba(201,168,76,.12);color:var(--amb)}
+.cb{padding:4px 20px 20px}
+.cw{position:relative}
+
+/* ── TABLE ── */
+.tbl{width:100%;border-collapse:collapse;font-size:12.5px}
+.tbl th{padding:9px 14px;text-align:left;font-size:11px;font-weight:600;
+  text-transform:uppercase;letter-spacing:.07em;color:var(--tx2);
+  border-bottom:1px solid var(--bdr);background:#F8FAFC}
+.tbl td{padding:10px 14px;border-bottom:1px solid #F2F5F9}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:#F8FAFC}
+.mono{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--tx2)}
+
+/* ── STATUS BADGES ── */
+.ok  {display:inline-block;padding:2px 9px;border-radius:10px;font-size:11px;
+      font-weight:600;background:rgba(26,155,94,.12);color:var(--grn)}
+.wrn {display:inline-block;padding:2px 9px;border-radius:10px;font-size:11px;
+      font-weight:600;background:rgba(212,131,10,.12);color:var(--amb)}
+.aln {display:inline-block;padding:2px 9px;border-radius:10px;font-size:11px;
+      font-weight:600;background:rgba(192,57,43,.12);color:var(--red)}
+.new {display:inline-block;padding:2px 9px;border-radius:10px;font-size:11px;
+      font-weight:600;background:rgba(31,107,117,.12);color:var(--t)}
+
+/* ── PROGRESS ── */
+.prog-row{display:flex;flex-direction:column;gap:12px;padding:4px 0}
+.pi{}.pi-top{display:flex;justify-content:space-between;margin-bottom:4px}
+.pi-lbl{font-size:12.5px;font-weight:500}
+.pi-val{font-size:12.5px;font-weight:600}
+.pt{height:9px;background:#EDF2F7;border-radius:99px;overflow:hidden}
+.pf{height:100%;border-radius:99px;transition:width 1.2s cubic-bezier(.25,.8,.25,1)}
+
+/* ── BREAK-EVEN METER ── */
+.be-wrap{padding:12px 20px 20px;display:flex;flex-direction:column;gap:16px}
+.be-row{display:flex;justify-content:space-between;align-items:center;
+  padding:10px 14px;border-radius:10px;border:1px solid var(--bdr)}
+.be-lbl{font-size:13px;font-weight:500}
+.be-val{font-size:14px;font-weight:700}
+.be-meter{height:14px;background:#EDF2F7;border-radius:99px;overflow:hidden;margin-top:8px}
+.be-fill{height:100%;border-radius:99px;transition:width 1.3s ease}
+
+/* ── SCENARIO TABLE ── */
+.sc-tbl{width:100%;border-collapse:collapse;font-size:12.5px}
+.sc-tbl th{padding:9px 12px;font-size:11px;font-weight:600;
+  text-transform:uppercase;letter-spacing:.07em;color:var(--tx2);
+  border-bottom:1px solid var(--bdr);background:#F8FAFC}
+.sc-tbl td{padding:9px 12px;border-bottom:1px solid #F2F5F9}
+.sc-best{background:rgba(26,155,94,.06)}
+.sc-base{background:rgba(31,107,117,.04)}
+.sc-worst{background:rgba(192,57,43,.05)}
+
+/* ── SUPPLIER CARDS ── */
+.sup-row{display:flex;gap:14px;padding:4px 0}
+.sup-card{flex:1;border:1px solid var(--bdr);border-radius:10px;padding:14px;
+  display:flex;flex-direction:column;gap:6px}
+.sup-flag{font-size:22px}
+.sup-name{font-size:13px;font-weight:600;color:var(--tx1)}
+.sup-items{font-size:12px;color:var(--tx2)}
+.sup-meta{font-size:12px;font-weight:500}
+.sup-tag{display:inline-block;padding:2px 8px;border-radius:8px;
+  font-size:11px;font-weight:600;margin-top:4px}
+.st-de{background:rgba(31,56,100,.1);color:var(--n)}
+.st-eg{background:rgba(201,168,76,.15);color:var(--amb)}
+.st-bg{background:rgba(31,107,117,.1);color:var(--t)}
+
+@media(max-width:1100px){
+  .kpis{grid-template-columns:repeat(3,1fr)}
+  .g2.a,.g2.b,.g2.c{grid-template-columns:1fr}
+  .main{padding:16px}
+}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-left">
+    <div class="hdr-badge">IE</div>
+    <div>
+      <div class="hdr-name">Specialty Retail Operations Dashboard</div>
+      <div class="hdr-sub">Frozen Goods & Arabic Groceries · Opalchenska, Sofia · Business Plan Model</div>
+    </div>
+  </div>
+  <div class="hdr-right">
+    <div class="hdr-tag">Plan Year 1 — 2025</div>
+    <div class="pulse"></div>
+  </div>
+</div>
+
+<div class="tabs">
+  <div class="tab on" onclick="sw(0,this)">📊 Overview</div>
+  <div class="tab" onclick="sw(1,this)">💰 Revenue & Margins</div>
+  <div class="tab" onclick="sw(2,this)">📦 Product Mix</div>
+  <div class="tab" onclick="sw(3,this)">🏗 Break-Even Analysis</div>
+  <div class="tab" onclick="sw(4,this)">🚢 Supply Chain</div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     VIEW 0 — OVERVIEW
+══════════════════════════════════════════════════ -->
+<div class="main">
+<div class="view on" id="v0">
+
+  <div class="alert-banner">
+    <span class="alert-icon">💡</span>
+    <span><strong>Business Plan Model:</strong> This dashboard presents the financial planning model for a specialty grocery retail store in Sofia, Bulgaria. Capital requirement: EUR 20,000–25,000. Break-even target: Month 5–7.</span>
+  </div>
+
+  <div class="kpis">
+    <div class="k"><div class="k-bar" style="background:var(--n)"></div>
+      <div class="k-label">Startup Capital</div>
+      <div class="k-val">€22,500</div>
+      <div class="k-sub">Total initial investment</div>
+      <div class="k-delta ne">EUR 20k–25k range</div>
+    </div>
+    <div class="k"><div class="k-bar" style="background:var(--t)"></div>
+      <div class="k-label">Monthly Fixed Costs</div>
+      <div class="k-val">€1,650</div>
+      <div class="k-sub">Rent + utilities + ops</div>
+      <div class="k-delta ne">Stable baseline</div>
+    </div>
+    <div class="k"><div class="k-bar" style="background:var(--g)"></div>
+      <div class="k-label">Daily Break-Even</div>
+      <div class="k-val">€220</div>
+      <div class="k-sub">Minimum daily sales target</div>
+      <div class="k-delta up">↑ Achievable by Month 5</div>
+    </div>
+    <div class="k"><div class="k-bar" style="background:#27AE60)"></div>
+      <div class="k-label">Avg Gross Margin</div>
+      <div class="k-val">52%</div>
+      <div class="k-sub">Blended across all SKUs</div>
+      <div class="k-delta up">38%–70% range by SKU</div>
+    </div>
+    <div class="k"><div class="k-bar" style="background:var(--t2)"></div>
+      <div class="k-label">Break-Even Month</div>
+      <div class="k-val">M5–M7</div>
+      <div class="k-sub">Projected timeline</div>
+      <div class="k-delta up">Base case: Month 6</div>
+    </div>
+  </div>
+
+  <div class="g2 a">
+    <div class="card">
+      <div class="ch"><div><div class="ct">Projected Monthly Revenue — Year 1</div>
+        <div class="cs">Revenue ramp from launch to stabilisation</div></div>
+        <span class="ctag">Trend</span></div>
+      <div class="cb"><div class="cw" style="height:240px"><canvas id="cRevRamp"></canvas></div></div>
+    </div>
+    <div class="card">
+      <div class="ch"><div><div class="ct">Revenue Mix by Category</div>
+        <div class="cs">% of total projected annual revenue</div></div>
+        <span class="ctag g">Mix</span></div>
+      <div class="cb"><div class="cw" style="height:240px"><canvas id="cCatMix"></canvas></div></div>
+    </div>
+  </div>
+
+  <div class="g2 b">
+    <div class="card">
+      <div class="ch"><div><div class="ct">Monthly P&L Summary — Base Case</div>
+        <div class="cs">Revenue vs costs vs cumulative profit/loss</div></div></div>
+      <div class="cb"><div class="cw" style="height:220px"><canvas id="cPL"></canvas></div></div>
+    </div>
+    <div class="card">
+      <div class="ch"><div><div class="ct">Cost Structure Breakdown</div>
+        <div class="cs">Fixed vs variable monthly costs (stabilised)</div></div></div>
+      <div class="cb"><div class="cw" style="height:220px"><canvas id="cCosts"></canvas></div></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     VIEW 1 — REVENUE & MARGINS
+══════════════════════════════════════════════════ -->
+<div class="view" id="v1">
+  <div class="g2 a">
+    <div class="card">
+      <div class="ch"><div><div class="ct">Daily Revenue vs Break-Even Target</div>
+        <div class="cs">Simulated daily sales — Month 6 (post-stabilisation)</div></div></div>
+      <div class="cb"><div class="cw" style="height:250px"><canvas id="cDaily"></canvas></div></div>
+    </div>
+    <div class="card">
+      <div class="ch"><div><div class="ct">Gross Margin by Category</div>
+        <div class="cs">Average margin % across product groups</div></div></div>
+      <div class="cb"><div class="cw" style="height:250px"><canvas id="cMargin"></canvas></div></div>
+    </div>
+  </div>
+  <div class="g2 b">
+    <div class="card">
+      <div class="ch"><div><div class="ct">Top 10 SKUs by Margin Contribution</div>
+        <div class="cs">Revenue × margin %</div></div></div>
+      <div class="cb">
+        <div class="prog-row" id="pSKU"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ch"><div><div class="ct">Price-Point Distribution</div>
+        <div class="cs">SKU count by retail price band</div></div></div>
+      <div class="cb"><div class="cw" style="height:240px"><canvas id="cPriceBand"></canvas></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     VIEW 2 — PRODUCT MIX
+══════════════════════════════════════════════════ -->
+<div class="view" id="v2">
+  <div class="g2 b">
+    <div class="card">
+      <div class="ch"><div><div class="ct">SKU Portfolio Overview</div>
+        <div class="cs">Product catalogue — all categories</div></div></div>
+      <div class="cb" style="padding-top:0">
+        <table class="tbl" id="tSKU">
+          <thead><tr><th>SKU</th><th>Category</th><th>Unit Price</th><th>Margin</th><th>Source</th><th>Status</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ch"><div><div class="ct">Category Revenue Projection</div>
+        <div class="cs">Monthly revenue per category — stabilised (Month 8+)</div></div></div>
+      <div class="cb"><div class="cw" style="height:300px"><canvas id="cCatRev"></canvas></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     VIEW 3 — BREAK-EVEN
+══════════════════════════════════════════════════ -->
+<div class="view" id="v3">
+  <div class="g2 b">
+    <div class="card">
+      <div class="ch"><div><div class="ct">Break-Even Scenario Comparison</div>
+        <div class="cs">Month to break-even under 3 scenarios</div></div></div>
+      <div class="cb">
+        <table class="sc-tbl">
+          <thead><tr><th>Scenario</th><th>Daily Sales</th><th>Monthly Rev</th><th>Fixed Costs</th><th>COGS %</th><th>Break-Even Month</th><th>Yr-1 Net</th></tr></thead>
+          <tbody id="tBE"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ch"><div><div class="ct">Cumulative Cash Position — Base Case</div>
+        <div class="cs">Running P&L from Month 0 (opening)</div></div></div>
+      <div class="cb"><div class="cw" style="height:280px"><canvas id="cCumCash"></canvas></div></div>
+    </div>
+  </div>
+  <div class="card" style="margin-bottom:20px">
+    <div class="ch"><div><div class="ct">Monthly KPI Tracker — Base Case Projections</div>
+      <div class="cs">Full 12-month financial model</div></div></div>
+    <div class="cb" style="padding-top:0">
+      <table class="tbl"><thead>
+        <tr><th>Month</th><th>Daily Rev Target</th><th>Monthly Revenue</th><th>COGS</th>
+            <th>Gross Profit</th><th>Fixed Costs</th><th>Net P&L</th><th>Cumulative</th><th>Status</th></tr>
+      </thead><tbody id="tKPI"></tbody></table>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     VIEW 4 — SUPPLY CHAIN
+══════════════════════════════════════════════════ -->
+<div class="view" id="v4">
+  <div class="g2 b">
+    <div class="card">
+      <div class="ch"><div><div class="ct">Dual-Source Supply Strategy</div>
+        <div class="cs">Germany (quality) + Egypt (cost efficiency)</div></div></div>
+      <div class="cb">
+        <div class="sup-row">
+          <div class="sup-card">
+            <div class="sup-flag">🇩🇪</div>
+            <div class="sup-name">German Import</div>
+            <div class="sup-items">Frozen vegetables · Premium frozen fruits · Dairy range</div>
+            <div class="sup-meta" style="color:var(--t)">Quality-tier products · Higher margin positioning</div>
+            <span class="sup-tag st-de">Primary: Quality</span>
+          </div>
+          <div class="sup-card">
+            <div class="sup-flag">🇪🇬</div>
+            <div class="sup-name">Egyptian Import</div>
+            <div class="sup-items">Arabic staples · Halal products · Regional specialties · Frozen fruits</div>
+            <div class="sup-meta" style="color:var(--amb)">Cost-efficient sourcing · Authentic product range</div>
+            <span class="sup-tag st-eg">Primary: Cost & Authenticity</span>
+          </div>
+          <div class="sup-card">
+            <div class="sup-flag">🇧🇬</div>
+            <div class="sup-name">Local Bulgarian</div>
+            <div class="sup-items">Fresh dairy · Local frozen goods · Ambient staples</div>
+            <div class="sup-meta" style="color:var(--grn)">Short lead times · No import duty</div>
+            <span class="sup-tag st-bg">Supplementary</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ch"><div><div class="ct">Supply Cost by Source</div>
+        <div class="cs">% of total COGS attributed to each supplier origin</div></div></div>
+      <div class="cb"><div class="cw" style="height:260px"><canvas id="cSupply"></canvas></div></div>
+    </div>
+  </div>
+  <div class="card" style="margin-bottom:20px">
+    <div class="ch"><div><div class="ct">Inventory Reorder Schedule — Month 1 Plan</div>
+      <div class="cs">Lead times and reorder triggers by supplier</div></div></div>
+    <div class="cb" style="padding-top:0">
+      <table class="tbl"><thead>
+        <tr><th>Product Group</th><th>Source</th><th>Lead Time</th><th>Reorder Point (units)</th><th>Order Frequency</th><th>Est. Order Value (EUR)</th><th>Status</th></tr>
+      </thead><tbody id="tInv"></tbody></table>
+    </div>
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<script>
+// ══════════════════════════════════════════════════
+// COLOUR PALETTE
+// ══════════════════════════════════════════════════
+const N='#1F3864',T='#1F6B75',G='#C9A84C',T2='#2E9FAE',
+      GRN='#1A9B5E',RED='#C0392B',AMB='#D4830A';
+
+Chart.defaults.font.family="'Sora',sans-serif";
+Chart.defaults.font.size=12;
+Chart.defaults.color='#526070';
+
+const grid=(c='#E5ECF5')=>({color:c,drawBorder:false,lineWidth:1});
+const noGrid=()=>({display:false});
+
+// ══════════════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════════════
+const MONTHS=['M1','M2','M3','M4','M5','M6','M7','M8','M9','M10','M11','M12'];
+
+// Revenue ramp — slow start, accelerates at M4, stabilises M8+
+const REV_BASE=[1800,2800,4200,5600,6900,7800,8400,8900,9100,9300,9400,9500];
+const FIXED=1650;
+// COGS assumed 48% of revenue (blended)
+const COGS_PCT=0.48;
+
+// ─── VIEW 0 ───────────────────────────────────────
+// Revenue ramp + break-even line
+new Chart(document.getElementById('cRevRamp'),{
+  data:{labels:MONTHS,datasets:[
+    {type:'bar',label:'Monthly Revenue (€)',data:REV_BASE,
+     backgroundColor:REV_BASE.map(v=>v>=FIXED/(1-COGS_PCT)?T+'BB':AMB+'BB'),
+     borderRadius:6},
+    {type:'line',label:'Break-Even Revenue (€)',
+     data:Array(12).fill(Math.round(FIXED/(1-COGS_PCT))),
+     borderColor:RED,borderDash:[6,4],borderWidth:2,pointRadius:0,fill:false}
+  ]},
+  options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{position:'top',labels:{boxWidth:12,padding:14}},
+      tooltip:{callbacks:{label:ctx=>`€${ctx.parsed.y?.toLocaleString()??''}`}}},
+    scales:{y:{grid:grid(),ticks:{callback:v=>'€'+v.toLocaleString()}},x:{grid:noGrid()}}}
+});
+
+// Category mix donut
+const CATS=['Frozen Veg','Frozen Fruit','Arabic Staples','Dairy & Cheese','Snacks & Drinks'];
+const CAT_REV=[24,18,32,14,12];
+const CAT_COL=[N,T,G,T2,GRN];
+new Chart(document.getElementById('cCatMix'),{
+  type:'doughnut',
+  data:{labels:CATS,datasets:[{data:CAT_REV,backgroundColor:CAT_COL,
+    borderWidth:2,borderColor:'#fff',hoverOffset:10}]},
+  options:{responsive:true,maintainAspectRatio:false,cutout:'60%',
+    plugins:{legend:{position:'right',labels:{boxWidth:12,padding:12}},
+      tooltip:{callbacks:{label:ctx=>`${ctx.label}: ${ctx.parsed}%`}}}}
+});
+
+// P&L bar + line
+const GROSS=REV_BASE.map(r=>Math.round(r*(1-COGS_PCT)));
+const NET=GROSS.map(g=>g-FIXED);
+let cum=0;const CUM=NET.map(n=>{cum+=n;return cum});
+new Chart(document.getElementById('cPL'),{
+  data:{labels:MONTHS,datasets:[
+    {type:'bar',label:'Gross Profit (€)',data:GROSS,backgroundColor:T+'99',borderRadius:5},
+    {type:'bar',label:'Fixed Costs (€)',data:Array(12).fill(FIXED),backgroundColor:RED+'66',borderRadius:5},
+    {type:'line',label:'Cumulative P&L (€)',data:CUM,borderColor:G,borderWidth:2.5,
+     pointRadius:4,fill:false,tension:.4,yAxisID:'y2'}
+  ]},
+  options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{position:'top',labels:{boxWidth:12,padding:12}}},
+    scales:{y:{grid:grid(),stacked:false,ticks:{callback:v=>'€'+v.toLocaleString()}},
+      y2:{position:'right',grid:{drawOnChartArea:false},
+          ticks:{color:G,callback:v=>'€'+v.toLocaleString()}},
+      x:{grid:noGrid()}}}
+});
+
+// Cost structure doughnut
+new Chart(document.getElementById('cCosts'),{
+  type:'doughnut',
+  data:{labels:['Rent','Utilities','Staff (pt)','Insurance','Packaging','Marketing'],
+    datasets:[{data:[650,200,400,120,150,130],
+      backgroundColor:[N,T,G,T2,GRN,'#8E44AD'],
+      borderWidth:2,borderColor:'#fff',hoverOffset:8}]},
+  options:{responsive:true,maintainAspectRatio:false,cutout:'58%',
+    plugins:{legend:{position:'right',labels:{boxWidth:12,padding:12}},
+      tooltip:{callbacks:{label:ctx=>`€${ctx.parsed}`}}}}
+});
+
+// ─── VIEW 1 ───────────────────────────────────────
+// Daily revenue simulation (month 6)
+const DAYS=Array.from({length:26},(_,i)=>i+1);
+const dailyBase=260;
+const dailyData=DAYS.map(()=>Math.round(dailyBase+Math.random()*90-35));
+new Chart(document.getElementById('cDaily'),{
+  type:'bar',
+  data:{labels:DAYS.map(d=>'D'+d),datasets:[
+    {label:'Daily Sales (€)',data:dailyData,
+     backgroundColor:dailyData.map(v=>v>=220?T+'BB':AMB+'BB'),borderRadius:4},
+    {type:'line',label:'Break-Even (€220)',data:Array(26).fill(220),
+     borderColor:RED,borderDash:[5,4],borderWidth:1.5,pointRadius:0,fill:false}
+  ]},
+  options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{position:'top',labels:{boxWidth:12,padding:12}}},
+    scales:{y:{grid:grid(),ticks:{callback:v=>'€'+v}},x:{grid:noGrid()}}}
+});
+
+// Margin by category
+const CAT_MARGIN=[42,45,62,48,55];
+new Chart(document.getElementById('cMargin'),{
+  type:'bar',
+  data:{labels:CATS,datasets:[{label:'Gross Margin %',data:CAT_MARGIN,
+    backgroundColor:CAT_COL,borderRadius:6}]},
+  options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',
+    plugins:{legend:{display:false},
+      tooltip:{callbacks:{label:ctx=>`${ctx.parsed.x}%`}}},
+    scales:{x:{grid:grid(),ticks:{callback:v=>v+'%'},min:0,max:80},y:{grid:noGrid()}}}
+});
+
+// Top SKUs progress bars
+const SKUS=[
+  {n:'Za\'atar Spice Blend 200g', mc:580},{n:'Frozen Falafel Mix 1kg',mc:510},
+  {n:'Halloumi Cheese 250g',mc:490},{n:'Sumac 100g',mc:420},
+  {n:'Frozen Spinach 1kg',mc:380},{n:'Tahini 400g',mc:360},
+  {n:'Harissa Paste 210g',mc:340},{n:'Mixed Berry Frozen 500g',mc:310},
+  {n:'Frozen Peas 1kg',mc:290},{n:'Medjool Dates 500g',mc:270},
+];
+const maxMC=Math.max(...SKUS.map(s=>s.mc));
+const SKU_COL=[N,T,G,T2,GRN,AMB,'#8E44AD',N,T,G];
+const pSKU=document.getElementById('pSKU');
+SKUS.forEach((s,i)=>{
+  pSKU.innerHTML+=`<div class="pi">
+    <div class="pi-top"><span class="pi-lbl">${s.n}</span>
+      <span class="pi-val">€${s.mc}</span></div>
+    <div class="pt"><div class="pf" style="width:${(s.mc/maxMC*100).toFixed(0)}%;background:${SKU_COL[i]}"></div></div>
+  </div>`;
+});
+
+// Price band histogram
+const PRICE_BANDS=['€0–2','€2–5','€5–10','€10–20','€20+'];
+const PRICE_CNTS=[8,22,18,9,3];
+new Chart(document.getElementById('cPriceBand'),{
+  type:'bar',
+  data:{labels:PRICE_BANDS,datasets:[{label:'SKU Count',data:PRICE_CNTS,
+    backgroundColor:[T,N,G,T2,GRN],borderRadius:6}]},
+  options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false}},
+    scales:{y:{grid:grid(),ticks:{stepSize:5}},x:{grid:noGrid()}}}
+});
+
+// ─── VIEW 2 ───────────────────────────────────────
+const SKU_DATA=[
+  {sku:'ARS-001',name:"Za'atar Spice",cat:'Arabic Staples',price:'€3.20',margin:'62%',src:'Egypt',st:'ok'},
+  {sku:'ARS-002',name:'Tahini 400g',cat:'Arabic Staples',price:'€4.80',margin:'58%',src:'Egypt',st:'ok'},
+  {sku:'ARS-003',name:'Harissa Paste',cat:'Arabic Staples',price:'€3.50',margin:'60%',src:'Egypt',st:'ok'},
+  {sku:'ARS-004',name:'Medjool Dates',cat:'Arabic Staples',price:'€8.90',margin:'55%',src:'Egypt',st:'ok'},
+  {sku:'ARS-005',name:'Falafel Mix 1kg',cat:'Arabic Staples',price:'€5.20',margin:'64%',src:'Egypt',st:'new'},
+  {sku:'FVG-001',name:'Frozen Spinach 1kg',cat:'Frozen Veg',price:'€2.40',margin:'42%',src:'Germany',st:'ok'},
+  {sku:'FVG-002',name:'Frozen Peas 1kg',cat:'Frozen Veg',price:'€2.20',margin:'40%',src:'Germany',st:'ok'},
+  {sku:'FVG-003',name:'Frozen Broccoli 1kg',cat:'Frozen Veg',price:'€2.60',margin:'44%',src:'Germany',st:'ok'},
+  {sku:'FFR-001',name:'Mixed Berry 500g',cat:'Frozen Fruit',price:'€3.80',margin:'45%',src:'Germany',st:'ok'},
+  {sku:'FFR-002',name:'Mango Chunks 1kg',cat:'Frozen Fruit',price:'€5.50',margin:'50%',src:'Egypt',st:'ok'},
+  {sku:'DCH-001',name:'Halloumi 250g',cat:'Dairy & Cheese',price:'€6.20',margin:'48%',src:'Bulgaria',st:'ok'},
+  {sku:'DCH-002',name:'Labneh 400g',cat:'Dairy & Cheese',price:'€4.50',margin:'52%',src:'Egypt',st:'new'},
+  {sku:'SND-001',name:'Baklava Mix 200g',cat:'Snacks',price:'€4.20',margin:'58%',src:'Egypt',st:'ok'},
+];
+const stBadge={ok:'<span class="ok">Active</span>',new:'<span class="new">New</span>',
+               wrn:'<span class="wrn">Low Stock</span>'};
+const tSKU=document.querySelector('#tSKU tbody');
+SKU_DATA.forEach(s=>{
+  tSKU.innerHTML+=`<tr>
+    <td class="mono">${s.sku}</td><td>${s.name}</td>
+    <td style="color:var(--t)">${s.cat}</td>
+    <td><strong>${s.price}</strong></td>
+    <td>${s.margin}</td>
+    <td>${s.src}</td>
+    <td>${stBadge[s.st]}</td>
+  </tr>`;
+});
+
+// Category revenue bar chart (stabilised)
+const CAT_STAB_REV=[2280,1674,2980,1302,1116];
+new Chart(document.getElementById('cCatRev'),{
+  type:'bar',
+  data:{labels:CATS,datasets:[{label:'Monthly Revenue (€)',data:CAT_STAB_REV,
+    backgroundColor:CAT_COL,borderRadius:7}]},
+  options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},
+      tooltip:{callbacks:{label:ctx=>`€${ctx.parsed.y.toLocaleString()}`}}},
+    scales:{y:{grid:grid(),ticks:{callback:v=>'€'+v.toLocaleString()}},x:{grid:noGrid()}}}
+});
+
+// ─── VIEW 3 ───────────────────────────────────────
+const SCENARIOS=[
+  {lbl:'Optimistic',cls:'sc-best',daily:320,fixed:1650,cogs:0.44,be:4,yr1:6200},
+  {lbl:'Base Case', cls:'sc-base',daily:260,fixed:1650,cogs:0.48,be:6,yr1:2400},
+  {lbl:'Pessimistic',cls:'sc-worst',daily:190,fixed:1650,cogs:0.52,be:11,yr1:-1800},
+];
+const tBE=document.getElementById('tBE');
+SCENARIOS.forEach(s=>{
+  const monthly=s.daily*26;
+  tBE.innerHTML+=`<tr class="${s.cls}">
+    <td><strong>${s.lbl}</strong></td>
+    <td>€${s.daily}</td>
+    <td>€${monthly.toLocaleString()}</td>
+    <td>€${s.fixed.toLocaleString()}</td>
+    <td>${(s.cogs*100).toFixed(0)}%</td>
+    <td><strong>Month ${s.be}</strong></td>
+    <td style="color:${s.yr1>=0?'var(--grn)':'var(--red)'}"><strong>${s.yr1>=0?'+':''}€${s.yr1.toLocaleString()}</strong></td>
+  </tr>`;
+});
+
+// Cumulative cash chart
+let c2=0;const CUM2=REV_BASE.map((r,i)=>{
+  c2+=Math.round(r*(1-COGS_PCT))-FIXED;return c2;
+});
+new Chart(document.getElementById('cCumCash'),{
+  type:'line',
+  data:{labels:MONTHS,datasets:[
+    {label:'Cumulative P&L (€)',data:CUM2,borderColor:T,backgroundColor:T+'22',
+     fill:true,tension:.4,borderWidth:2.5,pointRadius:5,
+     pointBackgroundColor:CUM2.map(v=>v>=0?GRN:RED)}
+  ]},
+  options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},
+      tooltip:{callbacks:{label:ctx=>`€${ctx.parsed.y.toLocaleString()}`}}},
+    scales:{y:{grid:grid(),ticks:{callback:v=>'€'+v.toLocaleString()}},x:{grid:noGrid()}}}
+});
+
+// KPI table
+const tKPI=document.getElementById('tKPI');
+let cumKPI=0;
+REV_BASE.forEach((rev,i)=>{
+  const cogs=Math.round(rev*COGS_PCT);
+  const gp=rev-cogs;const net=gp-FIXED;cumKPI+=net;
+  const be=Math.round(FIXED/(1-COGS_PCT)/26);
+  const status=rev>=FIXED/(1-COGS_PCT)
+    ?'<span class="ok">✓ Above B/E</span>'
+    :'<span class="wrn">Below B/E</span>';
+  tKPI.innerHTML+=`<tr>
+    <td><strong>${MONTHS[i]}</strong></td>
+    <td>€${be}</td>
+    <td>€${rev.toLocaleString()}</td>
+    <td>€${cogs.toLocaleString()}</td>
+    <td>€${gp.toLocaleString()}</td>
+    <td>€${FIXED.toLocaleString()}</td>
+    <td style="color:${net>=0?'var(--grn)':'var(--red)'}">${net>=0?'+':''}€${net.toLocaleString()}</td>
+    <td style="color:${cumKPI>=0?'var(--grn)':'var(--red)'}">${cumKPI>=0?'+':''}€${cumKPI.toLocaleString()}</td>
+    <td>${status}</td>
+  </tr>`;
+});
+
+// ─── VIEW 4 ───────────────────────────────────────
+new Chart(document.getElementById('cSupply'),{
+  type:'doughnut',
+  data:{labels:['Germany','Egypt','Bulgaria','Turkey'],
+    datasets:[{data:[38,42,14,6],
+      backgroundColor:[N,G,T,T2],borderWidth:2,borderColor:'#fff',hoverOffset:10}]},
+  options:{responsive:true,maintainAspectRatio:false,cutout:'58%',
+    plugins:{legend:{position:'right',labels:{boxWidth:12,padding:14}},
+      tooltip:{callbacks:{label:ctx=>`${ctx.label}: ${ctx.parsed}% of COGS`}}}}
+});
+
+const INV_DATA=[
+  {grp:'Frozen Vegetables',src:'🇩🇪 Germany',lead:'7–10 days',rop:'50 units',freq:'Bi-weekly',val:'€380',st:'ok'},
+  {grp:'Arabic Staples',src:'🇪🇬 Egypt',lead:'14–18 days',rop:'80 units',freq:'Monthly',val:'€620',st:'ok'},
+  {grp:'Frozen Fruits',src:'🇩🇪 Germany',lead:'7–10 days',rop:'40 units',freq:'Bi-weekly',val:'€290',st:'ok'},
+  {grp:'Dairy & Cheese',src:'🇧🇬 Bulgaria',lead:'2–3 days',rop:'30 units',freq:'Weekly',val:'€180',st:'wrn'},
+  {grp:'Halal Meat (frozen)',src:'🇪🇬 Egypt',lead:'14–21 days',rop:'25 units',freq:'Monthly',val:'€450',st:'ok'},
+  {grp:'Snacks & Sweets',src:'🇪🇬 Egypt',lead:'14–18 days',rop:'60 units',freq:'Monthly',val:'€340',st:'ok'},
+];
+const tInv=document.getElementById('tInv');
+INV_DATA.forEach(r=>{
+  const badge=r.st==='ok'?'<span class="ok">On Track</span>':'<span class="wrn">Review Lead Time</span>';
+  tInv.innerHTML+=`<tr><td>${r.grp}</td><td>${r.src}</td><td>${r.lead}</td>
+    <td>${r.rop}</td><td>${r.freq}</td>
+    <td style="font-weight:600;color:var(--t)">${r.val}</td><td>${badge}</td></tr>`;
+});
+
+// ══════════════════════════════════════════════════
+// TAB SWITCHING
+// ══════════════════════════════════════════════════
+function sw(idx,btn){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  document.getElementById('v'+idx).classList.add('on');
+  btn.classList.add('on');
+}
+</script>
+</body>
+</html>
