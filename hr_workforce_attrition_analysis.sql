@@ -1,9 +1,5 @@
--- =============================================================================
 -- PROJECT : HR Workforce & Attrition Analytics
--- AUTHOR  : Islam Elshakhs
--- TOOLS   : SQL / MySQL 8.0+  (window functions, CTEs, CASE logic)
--- =============================================================================
---
+
 -- BUSINESS PROBLEM
 -- ----------------
 -- A mid-size company lacked a structured view of workforce composition,
@@ -30,9 +26,7 @@
 -- =============================================================================
 
 
--- =============================================================================
 -- SECTION 1 : SCHEMA
--- =============================================================================
 
 DROP DATABASE IF EXISTS hr_analytics_portfolio;
 CREATE DATABASE hr_analytics_portfolio
@@ -94,9 +88,7 @@ CREATE TABLE separations (
 );
 
 
--- =============================================================================
 -- SECTION 2 : REFERENCE & SAMPLE DATA
--- =============================================================================
 
 INSERT INTO job_grades (grade_label, salary_min, salary_max) VALUES
     ('JG1', 18000, 24000),
@@ -200,13 +192,10 @@ INSERT INTO separations (emp_id, sep_date, sep_type, reason) VALUES
     (29, '2024-03-15', 'voluntary',   'Better compensation elsewhere');
 
 
--- =============================================================================
 -- SECTION 3 : ANALYTICAL QUERIES
--- =============================================================================
 
--- ---------------------------------------------------------------------------
 -- Q1. Current headcount by department with vacancy vs cap analysis
--- ---------------------------------------------------------------------------
+
 SELECT
     d.dept_name,
     COUNT(e.emp_id)                                      AS current_headcount,
@@ -220,10 +209,9 @@ GROUP BY d.dept_id, d.dept_name, d.headcount_cap
 ORDER BY current_headcount DESC;
 
 
--- ---------------------------------------------------------------------------
 -- Q2. Salary benchmarking — employee salary vs job-grade midpoint
 --     Flags outliers above or below 10% of the grade midpoint.
--- ---------------------------------------------------------------------------
+
 SELECT
     e.emp_id,
     e.full_name,
@@ -245,10 +233,9 @@ WHERE e.employment_status = 'active'
 ORDER BY pct_vs_midpoint DESC;
 
 
--- ---------------------------------------------------------------------------
 -- Q3. Attrition rate by department (voluntary separations only)
 --     Uses a CTE to calculate per-department exposure.
--- ---------------------------------------------------------------------------
+
 WITH dept_separations AS (
     SELECT
         e.dept_id,
@@ -278,10 +265,9 @@ LEFT JOIN dept_separations ds  ON ds.dept_id  = d.dept_id
 ORDER BY voluntary_attrition_pct DESC;
 
 
--- ---------------------------------------------------------------------------
 -- Q4. Attrition by tenure band
 --     Key insight: identify the most vulnerable tenure window.
--- ---------------------------------------------------------------------------
+
 WITH employee_tenure AS (
     SELECT
         e.emp_id,
@@ -317,10 +303,9 @@ END
 ORDER BY MIN(tenure_months);
 
 
--- ---------------------------------------------------------------------------
 -- Q5. Performance score trend per employee — year-on-year delta
 --     Uses LAG() to calculate improvement or decline.
--- ---------------------------------------------------------------------------
+
 SELECT
     e.emp_id,
     e.full_name,
@@ -345,10 +330,9 @@ JOIN departments d ON d.dept_id = e.dept_id
 ORDER BY e.emp_id, pr.review_year;
 
 
--- ---------------------------------------------------------------------------
 -- Q6. Salary quartile distribution within each department
 --     NTILE(4) buckets employees into pay quartiles for equity analysis.
--- ---------------------------------------------------------------------------
+
 SELECT
     emp_id,
     full_name,
@@ -365,9 +349,8 @@ WHERE e.employment_status = 'active'
 ORDER BY d.dept_id, pay_quartile;
 
 
--- ---------------------------------------------------------------------------
 -- Q7. New hire cohort survival — how many hired each year are still active?
--- ---------------------------------------------------------------------------
+
 SELECT
     YEAR(hire_date)                                       AS hire_year,
     COUNT(*)                                              AS total_hired,
@@ -382,9 +365,8 @@ GROUP BY YEAR(hire_date)
 ORDER BY hire_year;
 
 
--- ---------------------------------------------------------------------------
 -- Q8. Department gender balance and pay gap summary
--- ---------------------------------------------------------------------------
+
 SELECT
     d.dept_name,
     SUM(CASE WHEN e.gender = 'F' THEN 1 ELSE 0 END)     AS female_count,
@@ -406,9 +388,8 @@ GROUP BY d.dept_id, d.dept_name
 ORDER BY female_pct DESC;
 
 
--- ---------------------------------------------------------------------------
 -- Q9. Exit interview insight — separation reasons frequency analysis
--- ---------------------------------------------------------------------------
+
 SELECT
     s.reason,
     s.sep_type,
@@ -419,8 +400,3 @@ FROM separations s
 JOIN employees   e ON e.emp_id = s.emp_id
 GROUP BY s.reason, s.sep_type
 ORDER BY frequency DESC;
-
-
--- =============================================================================
--- END OF FILE
--- =============================================================================
