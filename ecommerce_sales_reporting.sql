@@ -1,8 +1,4 @@
--- =============================================================================
 -- PROJECT : E-Commerce Sales Performance & Inventory Reporting
--- AUTHOR  : Islam Elshakhs
--- TOOLS   : SQL / MySQL  (compatible with MySQL 8.0+ and MariaDB 10.5+)
--- =============================================================================
 --
 -- BUSINESS PROBLEM
 -- ----------------
@@ -24,15 +20,13 @@
 --
 -- OUTCOME
 -- -------
--- Provided the foundation for a Tableau dashboard (see companion file) that
+-- Provided the foundation for a Tableau dashboard that
 -- surfaced the top 3 revenue-driving categories and identified 8 SKUs with
 -- stock levels below 14-day demand, enabling proactive reorder decisions.
 -- =============================================================================
 
 
--- =============================================================================
 -- SECTION 1 : SCHEMA SETUP
--- =============================================================================
 
 DROP DATABASE IF EXISTS ecommerce_portfolio;
 CREATE DATABASE ecommerce_portfolio CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -110,9 +104,7 @@ CREATE TABLE order_items (
 );
 
 
--- =============================================================================
 -- SECTION 2 : SAMPLE DATA
--- =============================================================================
 
 INSERT INTO regions (region_name) VALUES
     ('Sofia & Central'),
@@ -205,14 +197,11 @@ INSERT INTO order_items (order_id, product_id, quantity, unit_price) VALUES
     (24, 1,  1, 49.99), (24, 10, 1, 29.99);
 
 
--- =============================================================================
 -- SECTION 3 : ANALYTICAL QUERIES
--- =============================================================================
 
--- -----------------------------------------------------------------------------
 -- Q1. Monthly revenue, order volume, and average order value (AOV)
 --     Completed orders only.  Baseline trend view for the dashboard.
--- -----------------------------------------------------------------------------
+
 SELECT
     DATE_FORMAT(o.order_date, '%Y-%m')          AS month,
     COUNT(DISTINCT o.order_id)                  AS total_orders,
@@ -226,9 +215,8 @@ GROUP BY DATE_FORMAT(o.order_date, '%Y-%m')
 ORDER BY month;
 
 
--- -----------------------------------------------------------------------------
 -- Q2. Revenue by product category with contribution %
--- -----------------------------------------------------------------------------
+
 SELECT
     c.category_name,
     COUNT(DISTINCT o.order_id)                                  AS orders,
@@ -247,9 +235,8 @@ GROUP BY c.category_id, c.category_name
 ORDER BY category_revenue DESC;
 
 
--- -----------------------------------------------------------------------------
 -- Q3. Top 10 SKUs by revenue with margin analysis
--- -----------------------------------------------------------------------------
+
 SELECT
     p.sku,
     p.product_name,
@@ -271,9 +258,8 @@ ORDER BY total_revenue DESC
 LIMIT 10;
 
 
--- -----------------------------------------------------------------------------
 -- Q4. Revenue by region — for geographic heat-map / bar chart
--- -----------------------------------------------------------------------------
+
 SELECT
     r.region_name,
     COUNT(DISTINCT o.order_id)              AS total_orders,
@@ -290,9 +276,8 @@ GROUP BY r.region_id, r.region_name
 ORDER BY total_revenue DESC;
 
 
--- -----------------------------------------------------------------------------
 -- Q5. Repeat-purchase rate: customers with 2+ orders vs. total customers
--- -----------------------------------------------------------------------------
+
 WITH customer_orders AS (
     SELECT
         customer_id,
@@ -312,9 +297,8 @@ SELECT
 FROM customer_orders;
 
 
--- -----------------------------------------------------------------------------
 -- Q6. Customer lifetime value (CLV) ranking
--- -----------------------------------------------------------------------------
+
 SELECT
     cu.customer_id,
     cu.full_name,
@@ -334,11 +318,10 @@ GROUP BY cu.customer_id, cu.full_name, r.region_name, cu.registered_at
 ORDER BY lifetime_revenue DESC;
 
 
--- -----------------------------------------------------------------------------
 -- Q7. Inventory depletion velocity and reorder alert
 --     Calculates average daily sales over the last 90 days and flags items
 --     where current stock is below 14 days of demand.
--- -----------------------------------------------------------------------------
+
 WITH daily_sales AS (
     SELECT
         oi.product_id,
@@ -381,9 +364,8 @@ ORDER BY
     i.stock_on_hand ASC;
 
 
--- -----------------------------------------------------------------------------
 -- Q8. Month-over-month revenue growth (window function)
--- -----------------------------------------------------------------------------
+
 WITH monthly_rev AS (
     SELECT
         DATE_FORMAT(o.order_date, '%Y-%m')   AS month,
@@ -405,9 +387,8 @@ FROM monthly_rev
 ORDER BY month;
 
 
--- -----------------------------------------------------------------------------
 -- Q9. Refund rate by category (data quality / loss analysis)
--- -----------------------------------------------------------------------------
+
 SELECT
     c.category_name,
     COUNT(DISTINCT o.order_id)                              AS total_orders,
@@ -424,8 +405,3 @@ JOIN order_items oi ON oi.product_id  = p.product_id
 JOIN orders      o  ON o.order_id     = oi.order_id
 GROUP BY c.category_id, c.category_name
 ORDER BY refund_rate_pct DESC;
-
-
--- =============================================================================
--- END OF FILE
--- =============================================================================
