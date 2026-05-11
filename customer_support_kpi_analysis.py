@@ -1,9 +1,5 @@
 """
-=============================================================================
 PROJECT: Customer Support KPI Analysis & Dashboard
-AUTHOR:  Islam Elshakhs
-TOOLS:   Python (pandas, matplotlib, seaborn)
-=============================================================================
 
 BUSINESS PROBLEM
 ----------------
@@ -38,9 +34,7 @@ warnings.filterwarnings("ignore")
 
 np.random.seed(42)
 
-# ---------------------------------------------------------------------------
-# 1. SYNTHETIC DATA GENERATION  (replaces live CSV export for portfolio demo)
-# ---------------------------------------------------------------------------
+# 1. SYNTHETIC DATA GENERATION  
 
 ISSUE_TYPES   = ["Billing Dispute", "Technical Fault", "Account Access",
                  "Plan Upgrade", "Cancellation Request"]
@@ -69,9 +63,7 @@ raw_data.loc[mask_cancel, "csat_score"] = np.clip(
 mask_email = raw_data["channel"] == "Email"
 raw_data.loc[mask_email, "handle_time_min"] += 8
 
-# ---------------------------------------------------------------------------
 # 2. DATA CLEANING & VALIDATION
-# ---------------------------------------------------------------------------
 
 df = raw_data.copy()
 
@@ -91,9 +83,7 @@ df = df[(df["csat_score"] >= 1)     & (df["csat_score"] <= 5)]
 # 2c. Deduplication
 df = df.drop_duplicates(subset="ticket_id")
 
-# ---------------------------------------------------------------------------
 # 3. FEATURE ENGINEERING
-# ---------------------------------------------------------------------------
 
 df["fcr_flag"]      = (df["reopened"] == 0).astype(int)          # 1 = resolved first contact
 df["sla_breach"]    = (df["handle_time_min"] > df["sla_target_min"]).astype(int)
@@ -103,9 +93,7 @@ df["handle_band"]   = pd.cut(df["handle_time_min"],
                              labels=["<10 min","10-20 min","20-30 min",
                                      "30-60 min",">60 min"])
 
-# ---------------------------------------------------------------------------
 # 4. KPI AGGREGATIONS
-# ---------------------------------------------------------------------------
 
 # Monthly summary
 monthly = (df.groupby("month")
@@ -141,9 +129,7 @@ agent_sla = (df.groupby("agent")["sla_breach"]
                .reset_index()
                .rename(columns={"sla_breach": "breach_pct"}))
 
-# ---------------------------------------------------------------------------
 # 5. VISUALISATION — four-panel KPI dashboard
-# ---------------------------------------------------------------------------
 
 NAVY   = "#1F3864"
 TEAL   = "#1F6B75"
@@ -224,9 +210,7 @@ for bar, val in zip(ax4.patches, agent_sla["breach_pct"]):
              f"{val}%", ha="center", fontsize=8, color=NAVY)
 ax4.legend(fontsize=8)
 
-# ---------------------------------------------------------------------------
 # 6. EXPORT
-# ---------------------------------------------------------------------------
 
 output_path = "support_dashboard.png"
 plt.savefig(output_path, dpi=150, bbox_inches="tight", facecolor=fig.get_facecolor())
