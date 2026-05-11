@@ -1,9 +1,5 @@
 """
-=============================================================================
 PROJECT: Retail Product Demand & Pricing EDA
-AUTHOR:  Islam Elshakhs
-TOOLS:   Python — pandas, numpy, scipy, matplotlib, seaborn
-=============================================================================
 
 BUSINESS PROBLEM
 ----------------
@@ -41,9 +37,7 @@ warnings.filterwarnings("ignore")
 
 np.random.seed(2024)
 
-# ─────────────────────────────────────────────────────────────
 # 1. RAW DATA GENERATION  (simulates a messy CSV export)
-# ─────────────────────────────────────────────────────────────
 
 N = 800
 CATEGORIES = ["Frozen Vegetables", "Frozen Fruits", "Arabic Staples",
@@ -102,9 +96,7 @@ raw.loc[raw.sample(8).index, "unit_price"] = np.random.uniform(80, 150, 8)
 raw.loc[raw.sample(20).index, "category"] = raw.loc[
     raw.sample(20).index, "category"].str.upper()
 
-# ─────────────────────────────────────────────────────────────
 # 2. DATA PROFILING
-# ─────────────────────────────────────────────────────────────
 
 print("=" * 60)
 print("RAW DATA PROFILE")
@@ -114,9 +106,7 @@ print(f"  Duplicate rows : {raw.duplicated().sum()}")
 print(f"  Missing values :\n{raw.isnull().sum()[raw.isnull().sum()>0]}")
 print(f"  Dtypes         :\n{raw.dtypes}")
 
-# ─────────────────────────────────────────────────────────────
 # 3. CLEANING PIPELINE
-# ─────────────────────────────────────────────────────────────
 
 df = raw.copy()
 
@@ -152,9 +142,7 @@ print(f"[CLEAN] Imputed missing cost_price values.")
 # Step 5: Recalculate sell_price for consistency
 df["sell_price"] = (df["unit_price"] * (1 - df["discount_pct"])).round(2)
 
-# ─────────────────────────────────────────────────────────────
 # 4. FEATURE ENGINEERING
-# ─────────────────────────────────────────────────────────────
 
 df["gross_margin_eur"]  = ((df["sell_price"] - df["cost_price"]) * df["units_sold"]).round(2)
 df["gross_margin_pct"]  = ((df["sell_price"] - df["cost_price"]) / df["sell_price"]).clip(0, 1).round(4)
@@ -174,9 +162,7 @@ print(f"\n[FEAT] Engineered columns: gross_margin_eur, gross_margin_pct, revenue
 print(f"\nCleaned dataset shape: {df.shape[0]:,} rows × {df.shape[1]} columns")
 print(f"\nABC Tier distribution:\n{df['abc_tier'].value_counts()}")
 
-# ─────────────────────────────────────────────────────────────
 # 5. STATISTICAL SUMMARY
-# ─────────────────────────────────────────────────────────────
 
 print("\n" + "=" * 60)
 print("CATEGORY SUMMARY")
@@ -195,9 +181,7 @@ _valid = df[["discount_pct","gross_margin_pct"]].dropna()
 r, p = stats.pearsonr(_valid["discount_pct"], _valid["gross_margin_pct"])
 print(f"\nCorrelation (discount vs gross margin): r = {r:.3f}, p = {p:.4f}")
 
-# ─────────────────────────────────────────────────────────────
 # 6. VISUALISATION — 6-panel EDA report
-# ─────────────────────────────────────────────────────────────
 
 NAVY, TEAL, GOLD = "#1F3864", "#1F6B75", "#C9A84C"
 CAT_PAL = ["#1F3864","#1F6B75","#C9A84C","#2A8C9A","#27AE60","#8E44AD"]
@@ -321,9 +305,8 @@ ax7.set_facecolor(LIGHT)
 ax7.set_title("Avg Margin by Discount Band", fontsize=11,
               fontweight="bold", color=NAVY, pad=8)
 
-# ─────────────────────────────────────────────────────────────
 # 7. SAVE
-# ─────────────────────────────────────────────────────────────
+
 out_png = "retail_eda_dashboard.png"
 plt.savefig(out_png, dpi=150, bbox_inches="tight", facecolor=fig.get_facecolor())
 plt.close()
